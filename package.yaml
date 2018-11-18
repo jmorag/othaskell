@@ -1,0 +1,54 @@
+name: othaskell
+version: '0.1.0.0'
+category: Game
+author: Joseph Morag
+maintainer: joseph.morag@columbia.edu
+copyright: 2018 Joseph Morag
+license: BSD3
+github: jmorag/othaskell
+
+extra-source-files:
+- README.md
+
+default-extensions:
+- OverloadedStrings
+- NoImplicitPrelude
+
+dependencies:
+- protolude >=0.2 && <0.3
+- array
+- time
+
+library:
+  source-dirs: src
+  ghc-options: -Wall
+  exposed-modules:
+  - Lib
+  dependencies:
+  - base >=4.7 && <5
+
+executables:
+  othaskell-exe:
+    main: Main.hs
+    source-dirs: app
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base
+    - othaskell
+
+tests:
+  othaskell-test:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base
+    - othaskell
