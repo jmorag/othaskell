@@ -20,6 +20,7 @@ dependencies:
 - protolude >=0.2 && <0.3
 - array
 - time
+- text
 
 library:
   source-dirs: src

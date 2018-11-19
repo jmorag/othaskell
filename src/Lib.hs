@@ -7,14 +7,16 @@ For more information on how to write Haddock comments check the user guide:
 <https://www.haskell.org/haddock/doc/html/index.html>
 -}
 module Lib
-  -- ( someFunc
-  -- , initialBoard
-  -- , initialState
-  -- , difficulty
-  -- ) 
-  where
+  ( someFunc
+  , initialBoard
+  , initialState
+  , mkDifficulty
+  , nextStates
+  )
+where
 
-import Lib.Prelude
+import qualified Data.Text                     as T
+import           Lib.Prelude
 
 -- | Prints an initial small othello board
 someFunc :: IO ()
@@ -25,6 +27,8 @@ data Player
   | Black
   deriving (Show, Eq)
 
+opponent :: Player -> Player
+opponent player = if player == White then Black else White
 
 -- | A square can either be occupied by a player or empty
 type Square = Maybe Player
@@ -37,8 +41,9 @@ type Position = (Int, Int)
 -- Top left of board with side-length n is (1,1) and bottom right is (n,n).
 type Board = Array Position Square
 
-(!?) :: Board -> Position -> Maybe Square
-board !? pos = if inRange (bounds board) pos then Just (board ! pos) else Nothing
+-- | Safe array lookup
+(!?) :: Ix i => Array i a -> i -> Maybe a
+arr !? ix = if inRange (bounds arr) ix then Just (arr ! ix) else Nothing
 
 
 -- | Defines the difficulty in terms of board size
@@ -79,6 +84,10 @@ data Gamestate = Gamestate
 initialState :: Difficulty -> Gamestate
 initialState difficulty = Gamestate (initialBoard difficulty) Black
 
+easyGame, hardGame :: Gamestate
+easyGame = initialState (mkDifficulty 2)
+hardGame = initialState (mkDifficulty 4)
+
 data Direction = N | NE | E | SE | S | SW | W | NW
 
 allDirs :: [Direction]
@@ -87,14 +96,14 @@ allDirs = [N, NE, E, SE, S, SW, W, NW]
 -- | Move along the board in the direction given
 inc :: Position -> Direction -> Position
 inc (row, col) = \case
-    N  -> (pred row, col)
-    NE -> (pred row, succ col)
-    E  -> (row, succ col)
-    SE -> (succ row, succ col)
-    S  -> (succ row, col)
-    SW -> (succ row, pred col)
-    W  -> (row, pred col)
-    NW -> (pred row, pred col)
+  N  -> (pred row, col)
+  NE -> (pred row, succ col)
+  E  -> (row, succ col)
+  SE -> (succ row, succ col)
+  S  -> (succ row, col)
+  SW -> (succ row, pred col)
+  W  -> (row, pred col)
+  NW -> (pred row, pred col)
 
 
 -- | Given a Gamestate, return all possible next legal moves
@@ -108,15 +117,62 @@ captures (Gamestate board player) pos = concatMap
   (\dir -> go dir (inc pos dir) [])
   validDirs
  where
-  opponent  = if player == White then Black else White
   validDirs = filter
-    (\dir -> board !? inc pos dir == Just (Just opponent)) allDirs
+    (\dir -> board !? inc pos dir == Just (Just (opponent player)))
+    allDirs
 
   go :: Direction -> Position -> [Position] -> [Position]
   go dir current traversed
     | board !? current `elem` [Nothing, Just Nothing] = []
     | board !? current == Just (Just player) = traversed
-    | board !? current == Just (Just opponent) = go dir
-                                                    (inc current dir)
-                                                    (current : traversed)
+    | board !? current == Just (Just (opponent player)) = go
+      dir
+      (inc current dir)
+      (current : traversed)
+    | otherwise = panic "Unreachable"
 
+nextStates :: Gamestate -> [Gamestate]
+nextStates gstate@(Gamestate board player) = map nextState (legalMoves gstate)
+ where
+  nextState pos =
+    let newBoard =
+          board
+            // ( (pos, Just player)
+               : zip (captures gstate pos) (repeat (Just player))
+               )
+    in  Gamestate newBoard (opponent player)
+
+renderState :: Gamestate -> Text
+renderState (Gamestate board player) =
+  let (nrows, _) = snd (bounds board)
+      getRow i =
+        filter (\x -> let row = fst (fst x) in row == i) (assocs board)
+      rows      = map getRow [1 .. nrows]
+      renderRow = T.concat . map
+        (\(_, square) -> case square of
+          Nothing    -> " - " :: Text
+          Just Black -> " B "
+          Just White -> " W "
+        )
+  in  T.unlines $ show player : map renderRow rows
+
+-- | Given the current gamestate, pick a new one to play or give up
+type Strategy = Gamestate -> Maybe Gamestate
+
+trivialStrategy :: Strategy
+trivialStrategy = head . nextStates
+
+-- Strange off by one error where the game terminates early in some cases
+runGame :: Gamestate -> Strategy -> Strategy -> [Gamestate]
+runGame initial blackStrategy whiteStrategy = unfold2 True f g initial
+ where
+  f gstate = (,) gstate <$> blackStrategy gstate
+  g gstate = (,) gstate <$> whiteStrategy gstate
+  unfold2 b f' g' seed = case (if b then f' else g') seed of
+    Nothing          -> []
+    Just (res, next) -> res : unfold2 (not b) f' g' next
+
+
+stupidGame :: IO ()
+stupidGame = mapM_ (putText . renderState)
+  $ runGame hardGame trivialStrategy trivialStrategy
