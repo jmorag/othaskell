@@ -164,15 +164,12 @@ trivialStrategy = head . nextStates
 
 -- Strange off by one error where the game terminates early in some cases
 runGame :: Gamestate -> Strategy -> Strategy -> [Gamestate]
-runGame initial blackStrategy whiteStrategy = unfold2 True f g initial
+runGame initial blackStrategy whiteStrategy = initial : unfold2 True blackStrategy whiteStrategy initial
  where
-  f gstate = (,) gstate <$> blackStrategy gstate
-  g gstate = (,) gstate <$> whiteStrategy gstate
   unfold2 b f' g' seed = case (if b then f' else g') seed of
     Nothing          -> []
-    Just (res, next) -> res : unfold2 (not b) f' g' next
-
+    Just res -> res : unfold2 (not b) f' g' res
 
 stupidGame :: IO ()
 stupidGame = mapM_ (putText . renderState)
-  $ runGame hardGame trivialStrategy trivialStrategy
+  $ runGame hardGame trivialStrategy (const Nothing)
