@@ -25,6 +25,7 @@ data Player
   | Black
   deriving (Show, Eq)
 
+
 -- | A square can either be occupied by a player or empty
 type Square = Maybe Player
 
@@ -36,12 +37,15 @@ type Position = (Int, Int)
 -- Top left of board with side-length n is (1,1) and bottom right is (n,n).
 type Board = Array Position Square
 
+(!?) :: Board -> Position -> Maybe Square
+board !? pos = if inRange (bounds board) pos then Just (board ! pos) else Nothing
+
+
 -- | Defines the difficulty in terms of board size
 --
 -- Difficulty of 1 -> 2x2 board, 2 -> 4x4 board, etc.
 -- Othello board sizes must always be even and this newtype can ensure that
-newtype Difficulty =
-  Difficulty Int
+newtype Difficulty = Difficulty Int
 
 -- | Smart constructor for difficulty of game ensuring valid board dimensions
 mkDifficulty :: Int -> Difficulty
@@ -56,13 +60,14 @@ initialBoard (Difficulty side) =
         | (row, col) == (side `div` 2, side `div` 2 + 1) = Just Black
         | (row, col) == (side `div` 2 + 1, side `div` 2) = Just Black
         | otherwise = Nothing
-   in array
+  in  array
         ((1, 1), (side, side))
         [ ((row, col), val)
         | row <- [1 .. side]
         , col <- [1 .. side]
         , let val = mkval (row, col)
         ]
+
 
 -- | Gamestate to be extended later if needed
 data Gamestate = Gamestate
@@ -72,11 +77,46 @@ data Gamestate = Gamestate
   deriving (Show, Eq)
 
 initialState :: Difficulty -> Gamestate
-initialState difficulty = Gamestate (initialBoard difficulty) Black 
+initialState difficulty = Gamestate (initialBoard difficulty) Black
 
--- WIP
--- -- | Given a Gamestate, return all possible next legal moves
--- legalMoves :: Gamestate -> [Position]
--- legalMoves (Gamestate board player) = 
---   let currentPieces = map fst $ filter (\square -> snd square == Just player) (assocs board)
---   in currentPieces
+data Direction = N | NE | E | SE | S | SW | W | NW
+
+allDirs :: [Direction]
+allDirs = [N, NE, E, SE, S, SW, W, NW]
+
+-- | Move along the board in the direction given
+inc :: Position -> Direction -> Position
+inc (row, col) = \case
+    N  -> (pred row, col)
+    NE -> (pred row, succ col)
+    E  -> (row, succ col)
+    SE -> (succ row, succ col)
+    S  -> (succ row, col)
+    SW -> (succ row, pred col)
+    W  -> (row, pred col)
+    NW -> (pred row, pred col)
+
+
+-- | Given a Gamestate, return all possible next legal moves
+legalMoves :: Gamestate -> [Position]
+legalMoves gstate =
+  let empties = map fst $ filter (isNothing . snd) (assocs (_board gstate))
+  in  filter (\pos -> captures gstate pos /= []) empties
+
+captures :: Gamestate -> Position -> [Position]
+captures (Gamestate board player) pos = concatMap
+  (\dir -> go dir (inc pos dir) [])
+  validDirs
+ where
+  opponent  = if player == White then Black else White
+  validDirs = filter
+    (\dir -> board !? inc pos dir == Just (Just opponent)) allDirs
+
+  go :: Direction -> Position -> [Position] -> [Position]
+  go dir current traversed
+    | board !? current `elem` [Nothing, Just Nothing] = []
+    | board !? current == Just (Just player) = traversed
+    | board !? current == Just (Just opponent) = go dir
+                                                    (inc current dir)
+                                                    (current : traversed)
+
