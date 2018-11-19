@@ -13,6 +13,8 @@ extra-source-files:
 default-extensions:
 - OverloadedStrings
 - NoImplicitPrelude
+- LambdaCase
+- MultiWayIf
 
 dependencies:
 - protolude >=0.2 && <0.3
