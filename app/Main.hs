@@ -1,7 +1,7 @@
 module Main where
 
 import Protolude
-import Lib
+import Game.Logic
 
 main :: IO ()
-main = someFunc
+main = return ()

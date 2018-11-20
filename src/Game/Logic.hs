@@ -1,26 +1,18 @@
 {-|
-Module      : Lib
-Description : Lib's main module
-
-This is a haddock comment describing your library
-For more information on how to write Haddock comments check the user guide:
-<https://www.haskell.org/haddock/doc/html/index.html>
+Module      : Game.Logic
+Description : Logic of the othello game
 -}
-module Lib
-  ( someFunc
-  , initialBoard
-  , initialState
-  , mkDifficulty
+module Game.Logic
+  ( easyGame
+  , hardGame
   , nextStates
+  , Player(..)
+  , opponent
+  , Gamestate(..)
   )
 where
 
-import qualified Data.Text                     as T
-import           Lib.Prelude
-
--- | Prints an initial small othello board
-someFunc :: IO ()
-someFunc = print (initialState (mkDifficulty 4))
+import           Game.Prelude
 
 data Player
   = White
@@ -141,35 +133,3 @@ nextStates gstate@(Gamestate board player) = map nextState (legalMoves gstate)
                : zip (captures gstate pos) (repeat (Just player))
                )
     in  Gamestate newBoard (opponent player)
-
-renderState :: Gamestate -> Text
-renderState (Gamestate board player) =
-  let (nrows, _) = snd (bounds board)
-      getRow i =
-        filter (\x -> let row = fst (fst x) in row == i) (assocs board)
-      rows      = map getRow [1 .. nrows]
-      renderRow = T.concat . map
-        (\(_, square) -> case square of
-          Nothing    -> " - " :: Text
-          Just Black -> " B "
-          Just White -> " W "
-        )
-  in  T.unlines $ show player : map renderRow rows
-
--- | Given the current gamestate, pick a new one to play or give up
-type Strategy = Gamestate -> Maybe Gamestate
-
-trivialStrategy :: Strategy
-trivialStrategy = head . nextStates
-
--- Strange off by one error where the game terminates early in some cases
-runGame :: Gamestate -> Strategy -> Strategy -> [Gamestate]
-runGame initial blackStrategy whiteStrategy = initial : unfold2 True blackStrategy whiteStrategy initial
- where
-  unfold2 b f' g' seed = case (if b then f' else g') seed of
-    Nothing          -> []
-    Just res -> res : unfold2 (not b) f' g' res
-
-stupidGame :: IO ()
-stupidGame = mapM_ (putText . renderState)
-  $ runGame hardGame trivialStrategy (const Nothing)
