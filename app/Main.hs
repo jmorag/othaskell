@@ -1,7 +1,7 @@
 module Main where
 
 import Protolude
-import Game.Logic
+import Game
 
 main :: IO ()
-main = return ()
+main = stupidGame

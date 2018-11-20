@@ -5,7 +5,7 @@ Description     : Top level of the Game module. Runs the game and displays turns
 
 module Game
   (
-
+  stupidGame
   )
 where
 
@@ -14,8 +14,8 @@ import Game.Logic
 import Game.Render
 import Game.Strategies
 
-runGame :: Gamestate -> Strategy -> Strategy -> [Gamestate]
-runGame initial blackStrategy whiteStrategy =
+aiVsAi :: Gamestate -> Strategy -> Strategy -> [Gamestate]
+aiVsAi initial blackStrategy whiteStrategy =
   initial : unfold2 True blackStrategy whiteStrategy initial
  where
   unfold2 b f g seed = case (if b then f else g) seed of
@@ -24,4 +24,4 @@ runGame initial blackStrategy whiteStrategy =
 
 stupidGame :: IO ()
 stupidGame = mapM_ (putText . renderState)
-  $ runGame hardGame trivialStrategy trivialStrategy
+  $ aiVsAi hardGame trivialStrategy trivialStrategy

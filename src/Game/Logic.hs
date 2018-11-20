@@ -9,6 +9,7 @@ module Game.Logic
   , Player(..)
   , opponent
   , Gamestate(..)
+  , score
   )
 where
 
@@ -133,3 +134,10 @@ nextStates gstate@(Gamestate board player) = map nextState (legalMoves gstate)
                : zip (captures gstate pos) (repeat (Just player))
                )
     in  Gamestate newBoard (opponent player)
+
+-- | Calculate the score, given a gamestate
+--
+-- (#Black, #White)
+score :: Gamestate -> (Int, Int)
+score (Gamestate board _) = (count Black, count White) where
+      count player = length $ filter (== Just player) (elems board)

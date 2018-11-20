@@ -16,3 +16,10 @@ type Strategy = Gamestate -> Maybe Gamestate
 
 trivialStrategy :: Strategy
 trivialStrategy = head . nextStates
+
+utility :: Player -> Gamestate -> Int
+utility = \case
+  Black -> uncurry (-) . score
+  White -> uncurry (flip (-)) . score
+
+
