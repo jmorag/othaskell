@@ -22,4 +22,3 @@ utility = \case
   Black -> uncurry (-) . score
   White -> uncurry (flip (-)) . score
 
-
