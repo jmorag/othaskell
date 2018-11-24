@@ -139,5 +139,5 @@ nextStates gstate@(Gamestate board player) = map nextState (legalMoves gstate)
 --
 -- (#Black, #White)
 score :: Gamestate -> (Int, Int)
-score (Gamestate board _) = (count Black, count White) where
-      count player = length $ filter (== Just player) (elems board)
+score (Gamestate board _) = (count Black, count White)
+  where count player = length $ filter (== Just player) (elems board)

@@ -3,14 +3,13 @@ Module      : Game.Render
 Description : Render the game visually
 -}
 module Game.Render
-  ( 
-  renderState
+  ( renderState
   )
 where
 
-import Game.Prelude
-import Game.Logic
-import qualified Data.Text as T
+import           Game.Prelude
+import           Game.Logic
+import qualified Data.Text                     as T
 
 renderState :: Gamestate -> Text
 renderState (Gamestate board player) =

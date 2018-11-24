@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4ecb6e1fb044ceffe3a8400bd5051efdfc8054954c983eeb144ec6a1d1e27933
+-- hash: 09bc58df1b42ac503529271fbfacee547c9f29239b6822275b993d6e400e7b75
 
 name:           othaskell
 version:        0.1.0.0
@@ -40,6 +40,7 @@ library
   build-depends:
       array
     , base >=4.7 && <5
+    , containers
     , protolude >=0.2 && <0.3
     , text
     , time
@@ -56,6 +57,7 @@ executable othaskell-exe
   build-depends:
       array
     , base
+    , containers
     , othaskell
     , protolude >=0.2 && <0.3
     , text
@@ -74,6 +76,7 @@ test-suite othaskell-test
   build-depends:
       array
     , base
+    , containers
     , othaskell
     , protolude >=0.2 && <0.3
     , text

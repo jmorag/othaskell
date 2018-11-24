@@ -21,6 +21,7 @@ dependencies:
 - array
 - time
 - text
+- containers
 
 library:
   source-dirs: src
