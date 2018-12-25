@@ -6,7 +6,7 @@ module Game.Strategies
   ( Strategy
   , trivialStrategy
   , greedyStrategy
-  , minimaxStrategy
+  , negamaxStrategy
   )
 where
 
@@ -20,11 +20,11 @@ type Strategy = Gamestate -> Maybe Gamestate
 trivialStrategy :: Strategy
 trivialStrategy = head . nextStates
 
--- | Calculates the utility for whoever's turn it is in a state
+-- | Calculates the utility for of person who brought the game to the current state
 utility :: Gamestate -> Int
 utility gstate = case _player gstate of
-  Black -> uncurry (-) . score $ gstate
-  White -> uncurry (flip (-)) . score $ gstate
+  White -> uncurry (-) . score $ gstate
+  Black -> uncurry (flip (-)) . score $ gstate
 
 minimumBy', maximumBy' :: (a -> a -> Ordering) -> [a] -> Maybe a
 
@@ -38,32 +38,14 @@ maximumBy' f xs = Just $ maximumBy f xs
 greedyStrategy :: Strategy
 greedyStrategy = minimumBy' (compare `on` utility) . nextStates
 
-
 fullGameTree :: Gamestate -> Tree Gamestate
 fullGameTree = unfoldTree (\gs -> (gs, nextStates gs))
 
-minimaxTree :: Tree Gamestate -> Maybe Gamestate
-minimaxTree tree =
-  rootLabel
-    <$> (case getPlayer tree of
-          White -> minimumBy'
-          Black -> maximumBy'
-        )
-          (compare `on` minimaxVal)
-          (subForest tree)
- where
-  minimaxVal subtree = case subForest subtree of
-    [] -> utility (rootLabel subtree)
-    forest ->
-      (case getPlayer subtree of
-          White -> minimum
-          Black -> maximum
-        )
-        (map minimaxVal forest)
-
-  getPlayer = _player . rootLabel
-
-
-minimaxStrategy :: Strategy
-minimaxStrategy = minimaxTree . fullGameTree
-
+negamaxStrategy :: Strategy
+negamaxStrategy gstate = rootLabel
+  <$> maximumBy' (compare `on` negamaxVal) (subForest (fullGameTree gstate))
+  where
+    negamaxVal :: Tree Gamestate -> Int
+    negamaxVal node = case subForest node of
+      [] -> utility (rootLabel node)
+      children -> negate $ maximum (map negamaxVal children)

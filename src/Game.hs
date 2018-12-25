@@ -4,9 +4,6 @@ Description     : Top level of the Game module. Runs the game and displays turns
 -}
 
 module Game
-  ( stupidGame
-  , renderAiVsAi
-  )
 where
 
 import Game.Prelude
@@ -43,4 +40,4 @@ renderAiVsAi gs blackS whiteS = do
       putText $ "Black :: " <> show black <> ", White :: " <> show white
 
 smartGame :: IO ()
-smartGame = renderAiVsAi easyGame minimaxStrategy trivialStrategy
+smartGame = renderAiVsAi easyGame negamaxStrategy negamaxStrategy
