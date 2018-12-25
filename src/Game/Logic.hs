@@ -21,7 +21,8 @@ data Player
   deriving (Show, Eq)
 
 opponent :: Player -> Player
-opponent player = if player == White then Black else White
+opponent Black = White
+opponent White = Black
 
 -- | A square can either be occupied by a player or empty
 type Square = Maybe Player
@@ -115,14 +116,12 @@ captures (Gamestate board player) pos = concatMap
     allDirs
 
   go :: Direction -> Position -> [Position] -> [Position]
-  go dir current traversed
-    | board !? current `elem` [Nothing, Just Nothing] = []
-    | board !? current == Just (Just player) = traversed
-    | board !? current == Just (Just (opponent player)) = go
-      dir
-      (inc current dir)
-      (current : traversed)
-    | otherwise = panic "Unreachable"
+  go dir current traversed = case join (board !? current) of
+    Nothing -> []
+    Just p  -> if p == player
+      then traversed
+      else go dir (inc current dir) (current : traversed)
+
 
 nextStates :: Gamestate -> [Gamestate]
 nextStates gstate@(Gamestate board player) = map nextState (legalMoves gstate)
