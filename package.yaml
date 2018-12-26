@@ -22,12 +22,14 @@ dependencies:
 - time
 - text
 - containers
+- gloss == 1.12.0.0
 
 library:
   source-dirs: src
   ghc-options: -Wall
   exposed-modules:
-  - Lib
+  - Game
+  - Game.Render
   dependencies:
   - base >=4.7 && <5
 

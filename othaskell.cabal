@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 09bc58df1b42ac503529271fbfacee547c9f29239b6822275b993d6e400e7b75
+-- hash: 29934341605e64aa30623a1c21d24f9c8d4a7bce2e0203aee0104d054bf76f26
 
 name:           othaskell
 version:        0.1.0.0
@@ -25,12 +25,11 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
-  other-modules:
       Game
+      Game.Render
+  other-modules:
       Game.Logic
       Game.Prelude
-      Game.Render
       Game.Strategies
       Paths_othaskell
   hs-source-dirs:
@@ -41,6 +40,7 @@ library
       array
     , base >=4.7 && <5
     , containers
+    , gloss ==1.12.0.0
     , protolude >=0.2 && <0.3
     , text
     , time
@@ -58,6 +58,7 @@ executable othaskell-exe
       array
     , base
     , containers
+    , gloss ==1.12.0.0
     , othaskell
     , protolude >=0.2 && <0.3
     , text
@@ -77,6 +78,7 @@ test-suite othaskell-test
       array
     , base
     , containers
+    , gloss ==1.12.0.0
     , othaskell
     , protolude >=0.2 && <0.3
     , text

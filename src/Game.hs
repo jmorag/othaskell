@@ -3,8 +3,7 @@ Module          : Game
 Description     : Top level of the Game module. Runs the game and displays turns
 -}
 
-module Game
-where
+module Game where
 
 import Game.Prelude
 import Game.Logic
@@ -30,7 +29,7 @@ stupidGame = renderAiVsAi hardGame trivialStrategy trivialStrategy
 renderAiVsAi :: Gamestate -> Strategy -> Strategy -> IO ()
 renderAiVsAi gs blackS whiteS = do
   let gss = aiVsAi gs blackS whiteS
-  mapM_ (putText . renderState) gss
+  mapM_ (putText . renderText) gss
   case score <$> lastMay gss of
     Nothing             -> return ()
     Just (black, white) -> do

@@ -112,7 +112,7 @@ captures (Gamestate board player) pos = concatMap
   validDirs
  where
   validDirs = filter
-    (\dir -> board !? inc pos dir == Just (Just (opponent player)))
+    (\dir -> join (board !? inc pos dir) == Just (opponent player))
     allDirs
 
   go :: Direction -> Position -> [Position] -> [Position]
