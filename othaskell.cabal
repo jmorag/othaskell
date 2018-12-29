@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6b288f7719fa301a0e795274c3a58a8abab7a9a376f0bfdb6b1f0a1536995106
+-- hash: c4c75f8316b94cad6c9bf31e15b24b0c80a49993f10da5e8ad65ce425ff77b70
 
 name:           othaskell
 version:        0.1.0.0
@@ -38,7 +38,6 @@ library
   ghc-options: -Wall
   build-depends:
       array
-    , async
     , base >=4.7 && <5
     , containers
     , gloss ==1.12.0.0
@@ -58,7 +57,6 @@ executable othaskell-exe
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       array
-    , async
     , base
     , containers
     , gloss ==1.12.0.0
@@ -80,7 +78,6 @@ test-suite othaskell-test
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       array
-    , async
     , base
     , containers
     , gloss ==1.12.0.0
