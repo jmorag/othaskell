@@ -24,10 +24,18 @@ renderText (Gamestate board player) =
         )
   in  T.unlines $ show player : map renderRow rows
 
--- | Draw an n x n empty othello board
-emptyBoard :: Float -> Float -> Picture
-emptyBoard n side = pictures $ map
-    (\(x, y) -> translate x y (rectangleUpperWire side side)
-    )
-    [ (x, y) | x <- offsets, y <- offsets ]
-    where offsets = take (floor n) (map (subtract ((n - 1) * side * 0.5)) [0, side..])
+renderGloss :: Gamestate -> Picture
+renderGloss (Gamestate board player) =
+  let (_, (_, n)) = bounds board
+      offset      = translate (fi n * (-40)) (fi n * (-40))
+  in  offset
+      . pictures
+      $ translate 0 600 (scale 0.25 0.25 $ text (show player <> "'s turn"))
+      : map renderSquare (assocs board)
+ where
+  renderSquare ((i, j), p) = translate (80 * fi i) (80 * fi j) $ case p of
+    Nothing    -> rectangleWire 80 80
+    Just White -> pictures [rectangleWire 80 80, color white $ circleSolid 40]
+    Just Black -> pictures [rectangleWire 80 80, color black $ circleSolid 40]
+
+  fi = fromIntegral
