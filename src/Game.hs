@@ -7,68 +7,13 @@ module Game where
 
 import Game.Prelude
 import Game.Logic
-import Game.Render
 import Game.Strategies
 
 import System.Timeout
-import qualified Data.Text.IO as T
-
-import qualified Graphics.Gloss as G
-
-aiVsAi :: Gamestate -> Strategy -> Strategy -> [Gamestate]
-aiVsAi initial blackStrategy whiteStrategy =
-  initial
-    : unfold
-        (\gs ->
-          (case _player gs of
-              White -> whiteStrategy
-              Black -> blackStrategy
-            )
-            gs
-        )
-        initial
- where
-  -- More specialized version of unfoldr
-  unfold fun seed = case fun seed of
-    Nothing     -> []
-    Just result -> result : unfold fun result
 
 data Config = Config { black :: Strategy
                      , white :: Strategy
-                     , render :: Gamestate -> IO ()
-                     , message :: Text -> IO ()
                      }
-
-textConfig :: Strategy -> Strategy -> Config
-textConfig b w = Config b w (T.putStrLn . renderText) T.putStrLn
-
-glossConfig :: Strategy -> Strategy -> Config
-glossConfig b w = Config
-  b
-  w
-  ( G.display (G.InWindow "Nice Window" (800, 800) (0, 0))
-              (G.dark $ G.dark G.green)
-  . renderGloss
-  )
-  T.putStrLn
-
-renderAiVsAi :: Gamestate -> ReaderT Config IO ()
-renderAiVsAi gs = do
-  config <- ask
-  liftIO $ render config gs
-  next <- stepGame gs
-  case next of
-    Right gs' -> renderAiVsAi gs'
-    Left Finished ->
-      liftIO
-        $  message config
-        $  "Game over: Black :: "
-        <> show (fst (score gs))
-        <> ", White :: "
-        <> show (snd (score gs))
-
-    Left Timeout ->
-      liftIO $ message config $ "Player " <> show (_player gs) <> " timed out"
 
 data Gameover = Finished | Timeout
 
