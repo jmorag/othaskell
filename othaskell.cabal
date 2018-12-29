@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 29934341605e64aa30623a1c21d24f9c8d4a7bce2e0203aee0104d054bf76f26
+-- hash: 6b288f7719fa301a0e795274c3a58a8abab7a9a376f0bfdb6b1f0a1536995106
 
 name:           othaskell
 version:        0.1.0.0
@@ -27,10 +27,10 @@ library
   exposed-modules:
       Game
       Game.Render
-  other-modules:
       Game.Logic
-      Game.Prelude
       Game.Strategies
+  other-modules:
+      Game.Prelude
       Paths_othaskell
   hs-source-dirs:
       src
@@ -38,9 +38,11 @@ library
   ghc-options: -Wall
   build-depends:
       array
+    , async
     , base >=4.7 && <5
     , containers
     , gloss ==1.12.0.0
+    , mtl
     , protolude >=0.2 && <0.3
     , text
     , time
@@ -56,9 +58,11 @@ executable othaskell-exe
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       array
+    , async
     , base
     , containers
     , gloss ==1.12.0.0
+    , mtl
     , othaskell
     , protolude >=0.2 && <0.3
     , text
@@ -76,9 +80,11 @@ test-suite othaskell-test
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       array
+    , async
     , base
     , containers
     , gloss ==1.12.0.0
+    , mtl
     , othaskell
     , protolude >=0.2 && <0.3
     , text

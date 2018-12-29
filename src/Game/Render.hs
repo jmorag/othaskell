@@ -8,13 +8,11 @@ import           Game.Prelude
 import           Game.Logic
 import qualified Data.Text                     as T
 import           Graphics.Gloss
--- import           Graphics.Gloss.Data.Picture
 
 renderText :: Gamestate -> Text
 renderText (Gamestate board player) =
   let (nrows, _) = snd (bounds board)
-      getRow i =
-        filter (\x -> let row = fst (fst x) in row == i) (assocs board)
+      getRow i = filter (\((row, _), _) -> row == i) (assocs board)
       rows      = map getRow [1 .. nrows]
       renderRow = T.concat . map
         (\(_, square) -> case square of
