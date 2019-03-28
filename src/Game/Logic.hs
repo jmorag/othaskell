@@ -2,6 +2,9 @@
 Module      : Game.Logic
 Description : Logic of the othello game
 -}
+
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DeriveAnyClass #-}
 module Game.Logic
   ( easyGame
   , hardGame
@@ -14,11 +17,12 @@ module Game.Logic
 where
 
 import           Game.Prelude
+import           GHC.Generics (Generic)
 
 data Player
   = White
   | Black
-  deriving (Show, Eq)
+  deriving (Show, Eq, Generic, NFData)
 
 opponent :: Player -> Player
 opponent Black = White
@@ -73,7 +77,7 @@ data Gamestate = Gamestate
   { _board :: Board
   , _player :: Player
   }
-  deriving (Show, Eq)
+  deriving (Show, Eq, Generic, NFData)
 
 initialState :: Difficulty -> Gamestate
 initialState difficulty = Gamestate (initialBoard difficulty) Black
@@ -112,7 +116,7 @@ captures (Gamestate board player) pos = concatMap
   validDirs
  where
   validDirs = filter
-    (\dir -> board !? inc pos dir == Just (Just (opponent player)))
+    (\dir -> join (board !? inc pos dir) == Just (opponent player))
     allDirs
 
   go :: Direction -> Position -> [Position] -> [Position]

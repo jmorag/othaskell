@@ -26,11 +26,11 @@ source-repository head
 library
   exposed-modules:
       Game
-  other-modules:
-      Game.Logic
-      Game.Prelude
       Game.Render
+      Game.Logic
       Game.Strategies
+  other-modules:
+      Game.Prelude
       Paths_othaskell
   hs-source-dirs:
       src
@@ -40,7 +40,8 @@ library
       array
     , base >=4.7 && <5
     , containers
-    , gloss
+    , gloss ==1.12.0.0
+    , mtl
     , protolude >=0.2 && <0.3
     , text
     , time
@@ -58,7 +59,8 @@ executable othaskell-exe
       array
     , base
     , containers
-    , gloss
+    , gloss ==1.12.0.0
+    , mtl
     , othaskell
     , protolude >=0.2 && <0.3
     , text
@@ -78,7 +80,8 @@ test-suite othaskell-test
       array
     , base
     , containers
-    , gloss
+    , gloss ==1.12.0.0
+    , mtl
     , othaskell
     , protolude >=0.2 && <0.3
     , text

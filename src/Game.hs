@@ -3,41 +3,45 @@ Module          : Game
 Description     : Top level of the Game module. Runs the game and displays turns
 -}
 
-module Game
-where
+module Game where
 
 import Game.Prelude
 import Game.Logic
-import Game.Render
 import Game.Strategies
 
-aiVsAi :: Gamestate -> Strategy -> Strategy -> [Gamestate]
-aiVsAi initial blackStrategy whiteStrategy = initial : unfold
-  (\gs -> (case _player gs of
-    White -> whiteStrategy
-    Black -> blackStrategy) gs
-  )
-  initial
- where
-  -- More specialized version of unfoldr
-  unfold fun seed = case fun seed of
-    Nothing     -> []
-    Just result -> result : unfold fun result
+import System.Timeout
 
-stupidGame :: IO ()
-stupidGame = renderAiVsAi hardGame trivialStrategy trivialStrategy
+data Config = Config { black :: Strategy
+                     , white :: Strategy
+                     }
 
-renderAiVsAi :: Gamestate -> Strategy -> Strategy -> IO ()
-renderAiVsAi gs blackS whiteS = do
-  let gss = aiVsAi gs blackS whiteS
-  mapM_ (putText . renderState) gss
-  case score <$> lastMay gss of
-    Nothing             -> return ()
-    Just (black, white) -> do
-      if black >= white
-        then putText "Black wins!"
-        else putText "White wins!"
-      putText $ "Black :: " <> show black <> ", White :: " <> show white
+data Gameover = Finished | Timeout
 
-smartGame :: IO ()
-smartGame = renderAiVsAi easyGame negamaxStrategy negamaxStrategy
+stepGame :: Gamestate -> ReaderT Config IO (Either Gameover Gamestate)
+stepGame gs = do
+  config <- ask
+  next   <-
+    liftIO
+    .  timeout (10000000 :: Int)
+    $  return
+    $!! (case _player gs of
+         White -> white config
+         Black -> black config
+       )
+         gs
+  case next of
+    Nothing         -> return $ Left Timeout
+    Just Nothing    -> return $ Left Finished
+    Just (Just gs') -> return $ Right gs'
+
+-- | If the game is over, just keeps returning the same state
+simpleStep :: Gamestate -> Reader Config Gamestate
+simpleStep gs = do
+  config <- ask
+  let next =
+        (case _player gs of
+            White -> white config
+            Black -> black config
+          )
+          gs
+  return $ fromMaybe gs next
