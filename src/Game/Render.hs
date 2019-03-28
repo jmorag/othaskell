@@ -11,6 +11,8 @@ import           Game.Prelude
 import           Game.Logic
 import qualified Data.Text                     as T
 
+import           Graphics.Gloss
+
 renderState :: Gamestate -> Text
 renderState (Gamestate board player) =
   let (nrows, _) = snd (bounds board)

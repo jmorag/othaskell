@@ -22,12 +22,13 @@ dependencies:
 - time
 - text
 - containers
+- gloss
 
 library:
   source-dirs: src
   ghc-options: -Wall
   exposed-modules:
-  - Lib
+  - Game
   dependencies:
   - base >=4.7 && <5
 

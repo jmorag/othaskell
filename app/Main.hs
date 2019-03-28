@@ -1,7 +1,7 @@
 module Main where
 
 import Protolude
-import Game
+import Graphics.Gloss
 
 main :: IO ()
-main = stupidGame
+main = display FullScreen white (Circle 80)
