@@ -4,7 +4,7 @@ let
 
   inherit (nixpkgs) pkgs;
 
-  f = { mkDerivation, array, base, containers, gloss, hpack
+  f = { mkDerivation, array, base, containers, gloss, hpack, mtl
       , protolude, stdenv, text, time
       }:
       mkDerivation {
@@ -14,14 +14,14 @@ let
         isLibrary = true;
         isExecutable = true;
         libraryHaskellDepends = [
-          array base containers gloss protolude text time
+          array base containers gloss mtl protolude text time
         ];
         libraryToolDepends = [ hpack ];
         executableHaskellDepends = [
-          array base containers gloss protolude text time
+          array base containers gloss mtl protolude text time
         ];
         testHaskellDepends = [
-          array base containers gloss protolude text time
+          array base containers gloss mtl protolude text time
         ];
         preConfigure = "hpack";
         homepage = "https://github.com/jmorag/othaskell#readme";

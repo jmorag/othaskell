@@ -23,7 +23,7 @@ dependencies:
 - text
 - containers
 - mtl
-- gloss == 1.12.0.0
+- gloss
 
 library:
   source-dirs: src

@@ -1,8 +1,10 @@
--- This file has been generated from package.yaml by hpack version 0.28.2.
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3c0da9cbabb0bfb902bbdddaedccd8a726aa6fb8946046b3200d607a73208447
+-- hash: ec3751305d0043b4fccf55e0f50b6ca79bd633a341131cfe7cd834818247bd96
 
 name:           othaskell
 version:        0.1.0.0
@@ -15,7 +17,6 @@ copyright:      2018 Joseph Morag
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
-cabal-version:  >= 1.10
 extra-source-files:
     README.md
 
@@ -40,7 +41,7 @@ library
       array
     , base >=4.7 && <5
     , containers
-    , gloss ==1.12.0.0
+    , gloss
     , mtl
     , protolude >=0.2 && <0.3
     , text
@@ -59,7 +60,7 @@ executable othaskell-exe
       array
     , base
     , containers
-    , gloss ==1.12.0.0
+    , gloss
     , mtl
     , othaskell
     , protolude >=0.2 && <0.3
@@ -80,7 +81,7 @@ test-suite othaskell-test
       array
     , base
     , containers
-    , gloss ==1.12.0.0
+    , gloss
     , mtl
     , othaskell
     , protolude >=0.2 && <0.3
