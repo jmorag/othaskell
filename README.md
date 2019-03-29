@@ -1,3 +1,3 @@
 # othaskell
 
-add description of othaskell here
+Othello implementation in Haskell. It should build with both stack and cabal new-build. Uses gloss for rendering a game. Look in `Game.Strategies` for the AI content. The only currently implemented strategies are naive minimax and minimax with alpha-beta pruning, but the architecture of the program should allow for more advanced ones to be implemented relatively easily. Any function of type `Gamestate -> Maybe Gamestate` can be used as a strategy, provided that it fetches the next move in less than 10 seconds. The `nextStates` function in `Game.Logic` provides all the necessary information about possible moves available in the current configuration.
