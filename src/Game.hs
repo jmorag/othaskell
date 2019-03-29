@@ -35,10 +35,10 @@ stepGame gs = do
           Black -> black config
         )
           gs
-  case next of
-    Nothing         -> return $ Left Timeout
-    Just Nothing    -> return $ Left Finished
-    Just (Just gs') -> return $ Right gs'
+  return $ case next of
+    Nothing         -> Left Timeout
+    Just Nothing    -> Left Finished
+    Just (Just gs') -> Right gs'
 
 -- | If the game is over, just keeps returning the same state
 simpleStep :: Gamestate -> Reader Config Gamestate
