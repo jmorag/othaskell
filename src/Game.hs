@@ -9,8 +9,10 @@ import           Game.Prelude
 import           Game.Logic
 import           Game.Strategies
 import           Game.Render
-import           Graphics.Gloss.Interface.IO.Simulate hiding 
-  (black, white)
+import           Graphics.Gloss.Interface.IO.Simulate
+                                         hiding ( black
+                                                , white
+                                                )
 
 import           System.Timeout
 
